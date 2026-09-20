@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeepDetect — AI-Powered Deepfake Detection System</title>
+<meta name="description" content="DeepDetect analyzes images and videos for signs of AI manipulation and returns a prediction with a confidence score. A B.Tech college project prototype.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<!-- Icon sprite: hand-built line icons, referenced throughout via <use> -->
+<svg style="display:none" aria-hidden="true">
+  <defs>
+    <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 15.5V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></symbol>
+    <symbol id="icon-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.4"/><path d="M21 16.5l-5.6-5.6a2 2 0 0 0-2.8 0L4 19"/></symbol>
+    <symbol id="icon-video" viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="14" rx="2"/><path d="M17 9.5l5-3v11l-5-3z"/></symbol>
+    <symbol id="icon-media" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><polygon points="10 9 16 12 10 15"/></symbol>
+    <symbol id="icon-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.3" y="9.3" width="5.4" height="5.4" rx="1"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5.5 5.5l2 2M16.5 16.5l2 2M18.5 5.5l-2 2M7.5 16.5l-2 2"/></symbol>
+    <symbol id="icon-sliders" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="7" cy="18" r="2"/></symbol>
+    <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12.2l2 2 4-4.4"/></symbol>
+    <symbol id="icon-gauge" viewBox="0 0 24 24"><path d="M4 15.5a8 8 0 1 1 16 0"/><path d="M12 15.5l4-5.3"/><circle cx="12" cy="15.5" r="1.1"/></symbol>
+    <symbol id="icon-layout" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="20"/></symbol>
+    <symbol id="icon-history" viewBox="0 0 24 24"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4.5v5h5"/><path d="M12 8v4.3l3 2"/></symbol>
+    <symbol id="icon-server" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="6" rx="1.4"/><rect x="3" y="14" width="18" height="6" rx="1.4"/><circle cx="7" cy="7" r=".9" fill="currentColor" stroke="none"/><circle cx="7" cy="17" r=".9" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="icon-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5.2" rx="8" ry="2.8"/><path d="M4 5.2v13.6c0 1.5 3.6 2.8 8 2.8s8-1.3 8-2.8V5.2"/><path d="M4 12c0 1.5 3.6 2.8 8 2.8s8-1.3 8-2.8"/></symbol>
+    <symbol id="icon-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/><path d="M3 17.5l9 5 9-5"/></symbol>
+    <symbol id="icon-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+    <symbol id="icon-menu" viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.2" y2="16.2"/></symbol>
+    <symbol id="icon-filter" viewBox="0 0 24 24"><path d="M4 5h16l-6 7.5V19l-4-2v-4.5z"/></symbol>
+    <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/></symbol>
+    <symbol id="icon-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.2l3 3 5-6.2"/></symbol>
+    <symbol id="icon-alert" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><line x1="12" y1="10" x2="12" y2="14.2"/><circle cx="12" cy="17" r=".7" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="icon-x-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></symbol>
+    <symbol id="icon-code" viewBox="0 0 24 24"><polyline points="8.5 6 3 12 8.5 18"/><polyline points="15.5 6 21 12 15.5 18"/></symbol>
+    <symbol id="icon-link" viewBox="0 0 24 24"><path d="M14 5h5v5"/><path d="M19 5l-9 9"/><path d="M9 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3"/></symbol>
+    <symbol id="icon-arrow-down" viewBox="0 0 24 24"><line x1="12" y1="4" x2="12" y2="18"/><polyline points="6.5 12.5 12 18 17.5 12.5"/></symbol>
+  </defs>
+</svg>
+
+<header class="site-header" id="siteHeader">
+  <div class="nav-container">
+    <a href="#home" class="logo">Deep<span>Detect</span></a>
+
+    <nav class="main-nav" aria-label="Primary">
+      <ul>
+        <li><a href="#home" class="nav-link" data-nav>Home</a></li>
+        <li><a href="#about" class="nav-link" data-nav>About</a></li>
+        <li><a href="#how-it-works" class="nav-link" data-nav>How It Works</a></li>
+        <li><a href="#features" class="nav-link" data-nav>Features</a></li>
+        <li><a href="#detection" class="nav-link" data-nav>Detection</a></li>
+        <li><a href="#history" class="nav-link" data-nav>History</a></li>
+        <li><a href="#technology" class="nav-link" data-nav>Technology</a></li>
+        <li><a href="#team" class="nav-link" data-nav>Team</a></li>
+      </ul>
+    </nav>
+
+    <a href="#detection" class="btn btn-primary nav-cta">Start Detection</a>
+
+    <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="mobileNav" aria-label="Open menu">
+      <svg class="icon" aria-hidden="true"><use href="#icon-menu"></use></svg>
+    </button>
+  </div>
+</header>
+
+<!-- Deliberately a sibling of <header>, not a child: the header uses
+     backdrop-filter, and a backdrop-filter (or filter) on an ancestor
+     creates a new containing block for position:fixed descendants in
+     modern browsers. Nesting this inside <header> silently collapsed
+     it to the header's own height instead of filling the viewport. -->
+<nav class="mobile-nav" id="mobileNav" aria-label="Mobile">
+  <ul>
+    <li><a href="#home" class="nav-link" data-nav>Home</a></li>
+    <li><a href="#about" class="nav-link" data-nav>About</a></li>
+    <li><a href="#how-it-works" class="nav-link" data-nav>How It Works</a></li>
+    <li><a href="#features" class="nav-link" data-nav>Features</a></li>
+    <li><a href="#detection" class="nav-link" data-nav>Detection</a></li>
+    <li><a href="#history" class="nav-link" data-nav>History</a></li>
+    <li><a href="#technology" class="nav-link" data-nav>Technology</a></li>
+    <li><a href="#team" class="nav-link" data-nav>Team</a></li>
+  </ul>
+  <a href="#detection" class="btn btn-primary mobile-cta">Start Detection</a>
+</nav>
+
+<main id="main">
+
+  <!-- HERO -->
+  <section id="home" class="hero">
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <h1 class="hero-headline">
+          <span class="line">Detect the fake.</span>
+          <span class="line accent">Protect the truth.</span>
+        </h1>
+        <p class="hero-subtitle">AI-powered deepfake detection for images and videos. Analyze digital media, identify manipulation, and understand the confidence behind every prediction.</p>
+        <div class="hero-actions">
+          <a href="#detection" class="btn btn-primary">Start Detection</a>
+          <a href="#features" class="btn btn-ghost">Explore Features</a>
+        </div>
+        <p class="hero-note">Prototype interface for a college project — see the Technology section for how a real model plugs in.</p>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <svg viewBox="0 0 400 400" class="scan-graphic">
+          <circle class="ring ring-1" cx="200" cy="200" r="164"></circle>
+          <circle class="ring ring-2" cx="200" cy="200" r="124"></circle>
+          <circle class="ring ring-3" cx="200" cy="200" r="84"></circle>
+
+          <g class="bracket-set">
+            <path d="M92 92h28M92 92v28"></path>
+            <path d="M308 92h-28M308 92v28"></path>
+            <path d="M92 308h28M92 308v-28"></path>
+            <path d="M308 308h-28M308 308v-28"></path>
+          </g>
+
+          <g class="node-mesh">
+            <line x1="160" y1="150" x2="200" y2="180"></line>
+            <line x1="240" y1="150" x2="200" y2="180"></line>
+            <line x1="200" y1="180" x2="150" y2="222"></line>
+            <line x1="200" y1="180" x2="250" y2="222"></line>
+            <line x1="150" y1="222" x2="182" y2="252"></line>
+            <line x1="250" y1="222" x2="218" y2="252"></line>
+            <line x1="182" y1="252" x2="218" y2="252"></line>
+            <circle cx="160" cy="150" r="3.5"></circle>
+            <circle cx="240" cy="150" r="3.5"></circle>
+            <circle cx="200" cy="180" r="4"></circle>
+            <circle cx="150" cy="222" r="3.5"></circle>
+            <circle cx="250" cy="222" r="3.5"></circle>
+            <circle cx="182" cy="252" r="3.5"></circle>
+            <circle cx="218" cy="252" r="3.5"></circle>
+          </g>
+
+          <rect class="scan-line" x="80" y="92" width="240" height="2.5"></rect>
+        </svg>
+        <span class="scan-tag">Analyzing media…</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATISTICS -->
+  <section class="stats-band" aria-label="Platform capabilities">
+    <div class="container stats-grid">
+      <div class="stat">
+        <svg class="icon" aria-hidden="true"><use href="#icon-cpu"></use></svg>
+        <p class="stat-title">AI-powered analysis</p>
+        <p class="stat-desc">Built around a deep learning classifier trained to spot manipulation artifacts.</p>
+      </div>
+      <div class="stat">
+        <svg class="icon" aria-hidden="true"><use href="#icon-media"></use></svg>
+        <p class="stat-title">Image + video detection</p>
+        <p class="stat-desc">One interface for both still images and video clips, no separate tools needed.</p>
+      </div>
+      <div class="stat">
+        <svg class="icon" aria-hidden="true"><use href="#icon-gauge"></use></svg>
+        <p class="stat-title">Confidence scoring</p>
+        <p class="stat-desc">Every prediction ships with a probability, not just a bare label.</p>
+      </div>
+      <div class="stat">
+        <svg class="icon" aria-hidden="true"><use href="#icon-history"></use></svg>
+        <p class="stat-title">Detection history</p>
+        <p class="stat-desc">Past analyses stay on hand so you can search, filter, and revisit them.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="section">
+    <div class="container about-grid">
+      <div class="about-copy">
+        <h2>What is a deepfake?</h2>
+        <p>A deepfake is an image or video where a face, voice, or motion has been generated or altered by an AI model, usually convincingly enough to pass for real. The same generative techniques behind style filters and voice cloning can be pushed further to fabricate someone saying or doing something that never happened.</p>
+        <p>DeepDetect is a college project built to explore the other side of that problem: given a piece of media, can a model learn to notice the artifacts a generation process leaves behind, and say so with a measurable confidence?</p>
+      </div>
+      <div class="about-reasons">
+        <h3>Why detection matters</h3>
+        <ul class="reason-list">
+          <li><strong>Misinformation:</strong> fabricated footage can spread and get screenshotted long before a correction catches up.</li>
+          <li><strong>Identity misuse:</strong> a person's face or voice can be reused in content they never took part in.</li>
+          <li><strong>Fraud:</strong> synthetic media is increasingly used to slip past identity checks and video calls.</li>
+          <li><strong>Social media manipulation:</strong> a convincingly edited clip can shape opinion before anyone verifies it.</li>
+          <li><strong>Digital trust:</strong> every unverified clip in circulation makes it a little harder to trust what a camera shows.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how-it-works" class="section alt">
+    <div class="container">
+      <div class="section-head">
+        <h2>How it works</h2>
+        <p class="section-lead">Four steps turn a raw upload into a prediction you can actually inspect.</p>
+      </div>
+      <ol class="process-steps">
+        <li class="process-step">
+          <span class="step-num">1</span>
+          <svg class="icon" aria-hidden="true"><use href="#icon-upload"></use></svg>
+          <h3>Upload media</h3>
+          <p>Drop in an image or video, or pick one from your device.</p>
+        </li>
+        <li class="process-step">
+          <span class="step-num">2</span>
+          <svg class="icon" aria-hidden="true"><use href="#icon-sliders"></use></svg>
+          <h3>Preprocess</h3>
+          <p>Frames are extracted, faces are located, and input is normalized for the model.</p>
+        </li>
+        <li class="process-step">
+          <span class="step-num">3</span>
+          <svg class="icon" aria-hidden="true"><use href="#icon-cpu"></use></svg>
+          <h3>AI analysis</h3>
+          <p>A trained classifier scores the media for manipulation artifacts.</p>
+        </li>
+        <li class="process-step">
+          <span class="step-num">4</span>
+          <svg class="icon" aria-hidden="true"><use href="#icon-shield"></use></svg>
+          <h3>Detection result</h3>
+          <p>You get a prediction, a confidence percentage, and a breakdown.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2>Features</h2>
+        <p class="section-lead">Everything the interface needs to make a detection legible, not just a label.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <svg class="icon" aria-hidden="true"><use href="#icon-image"></use></svg>
+          <h3>Image detection</h3>
+          <p>Upload a JPG, PNG, or WEBP and get a preview alongside the analysis.</p>
+        </article>
+        <article class="feature-card">
+          <svg class="icon" aria-hidden="true"><use href="#icon-video"></use></svg>
+          <h3>Video detection</h3>
+          <p>Analyze MP4, MOV, AVI, or MKV clips, with file details shown up front.</p>
+        </article>
+        <article class="feature-card">
+          <svg class="icon" aria-hidden="true"><use href="#icon-cpu"></use></svg>
+          <h3>AI analysis</h3>
+          <p>A clear step-by-step pipeline, from upload through classification.</p>
+        </article>
+        <article class="feature-card">
+          <svg class="icon" aria-hidden="true"><use href="#icon-gauge"></use></svg>
+          <h3>Confidence score</h3>
+          <p>Real and deepfake probabilities shown side by side, not just a verdict.</p>
+        </article>
+        <article class="feature-card">
+          <svg class="icon" aria-hidden="true"><use href="#icon-layout"></use></svg>
+          <h3>Easy interface</h3>
+          <p>Drag-and-drop uploads and a layout that works from phone to desktop.</p>
+        </article>
+        <article class="feature-card">
+          <svg class="icon" aria-hidden="true"><use href="#icon-history"></use></svg>
+          <h3>Detection history</h3>
+          <p>Every analysis is logged so you can search, filter, and compare later.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- DETECTION DASHBOARD -->
+  <section id="detection" class="section alt">
+    <div class="container">
+      <div class="section-head">
+        <h2>Detection dashboard</h2>
+        <p class="section-lead">Choose a media type, upload a file, and run the analysis.</p>
+      </div>
+
+      <div class="dashboard card-glass">
+        <div class="tabs" role="tablist" aria-label="Detection type">
+          <button class="tab is-active" id="tab-image" role="tab" aria-selected="true" aria-controls="panel-image" type="button" data-tab="image">
+            <svg class="icon" aria-hidden="true"><use href="#icon-image"></use></svg>
+            Image Detection
+          </button>
+          <button class="tab" id="tab-video" role="tab" aria-selected="false" aria-controls="panel-video" type="button" data-tab="video" tabindex="-1">
+            <svg class="icon" aria-hidden="true"><use href="#icon-video"></use></svg>
+            Video Detection
+          </button>
+        </div>
+
+        <!-- IMAGE PANEL -->
+        <div class="tab-panel is-active" id="panel-image" role="tabpanel" aria-labelledby="tab-image">
+          <div class="dropzone" id="dropzoneImage" data-dropzone="image">
+            <svg class="icon icon-lg" aria-hidden="true"><use href="#icon-upload"></use></svg>
+            <p class="dropzone-title">Drag and drop an image here</p>
+            <p class="dropzone-sub">or</p>
+            <label class="btn btn-secondary" for="fileInputImage">Choose file</label>
+            <input type="file" id="fileInputImage" accept=".jpg,.jpeg,.png,.webp" class="visually-hidden" aria-describedby="imageFileHelp">
+            <p class="dropzone-meta" id="imageFileHelp">Accepted: JPG, JPEG, PNG, WEBP · Max size 15 MB</p>
+          </div>
+
+          <div class="file-preview is-hidden" id="previewImage" aria-live="polite">
+            <div class="file-preview-media">
+              <img id="previewImageEl" alt="Selected image preview">
+            </div>
+            <div class="file-preview-info">
+              <p class="file-name" id="imageFileName">filename.jpg</p>
+              <p class="file-size" id="imageFileSize">0 KB</p>
+              <button class="btn btn-text" id="removeImageBtn" type="button">
+                <svg class="icon" aria-hidden="true"><use href="#icon-x-circle"></use></svg>
+                Remove file
+              </button>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-analyze" id="analyzeImageBtn" type="button" disabled>Analyze Image</button>
+        </div>
+
+        <!-- VIDEO PANEL -->
+        <div class="tab-panel" id="panel-video" role="tabpanel" aria-labelledby="tab-video" hidden>
+          <div class="dropzone" id="dropzoneVideo" data-dropzone="video">
+            <svg class="icon icon-lg" aria-hidden="true"><use href="#icon-upload"></use></svg>
+            <p class="dropzone-title">Drag and drop a video here</p>
+            <p class="dropzone-sub">or</p>
+            <label class="btn btn-secondary" for="fileInputVideo">Choose file</label>
+            <input type="file" id="fileInputVideo" accept=".mp4,.avi,.mov,.mkv" class="visually-hidden" aria-describedby="videoFileHelp">
+            <p class="dropzone-meta" id="videoFileHelp">Accepted: MP4, MOV, AVI, MKV · Max size 100 MB</p>
+          </div>
+
+          <div class="file-preview file-preview-video is-hidden" id="previewVideo" aria-live="polite">
+            <div class="file-preview-media">
+              <video id="previewVideoEl" controls playsinline></video>
+            </div>
+            <div class="file-preview-info">
+              <p class="file-name" id="videoFileName">filename.mp4</p>
+              <p class="file-size" id="videoFileSize">0 MB · 0:00</p>
+              <button class="btn btn-text" id="removeVideoBtn" type="button">
+                <svg class="icon" aria-hidden="true"><use href="#icon-x-circle"></use></svg>
+                Remove file
+              </button>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-analyze" id="analyzeVideoBtn" type="button" disabled>Analyze Video</button>
+        </div>
+
+        <!-- ANALYSIS PROGRESS (populated in Stage 3) -->
+        <div class="analysis-progress is-hidden" id="analysisProgress" aria-live="polite">
+          <div class="spinner" aria-hidden="true"></div>
+          <p class="analysis-status">AI is analyzing your media…</p>
+          <ol class="analysis-steps">
+            <li data-step="upload">Upload</li>
+            <li data-step="preprocess">Preprocessing</li>
+            <li data-step="analyze">AI Analysis</li>
+            <li data-step="classify">Classification</li>
+            <li data-step="result">Result</li>
+          </ol>
+        </div>
+
+        <!-- RESULT CARD (populated in Stage 3, hidden until an analysis runs) -->
+        <div class="result-card is-fake is-hidden" id="resultCard" aria-live="polite">
+          <div class="result-heading">
+            <svg class="icon icon-lg" aria-hidden="true"><use href="#icon-alert" id="resultIconUse"></use></svg>
+            <div>
+              <p class="result-label">Detection result</p>
+              <p class="result-prediction" id="resultPrediction">DEEPFAKE DETECTED</p>
+            </div>
+            <p class="result-confidence" id="resultConfidence">94.7%</p>
+          </div>
+
+          <div class="result-bars">
+            <div class="result-bar-row">
+              <span>Deepfake probability</span>
+              <div class="bar-track"><div class="bar-fill fill-danger" id="barDeepfake" style="width:94.7%"></div></div>
+              <span id="deepfakeProb">94.7%</span>
+            </div>
+            <div class="result-bar-row">
+              <span>Real probability</span>
+              <div class="bar-track"><div class="bar-fill fill-safe" id="barReal" style="width:5.3%"></div></div>
+              <span id="realProb">5.3%</span>
+            </div>
+          </div>
+
+          <p class="result-summary" id="resultSummary">Possible manipulated media detected. This is a mock result from the frontend prototype — connect a trained model through the API layer for a genuine prediction.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DETECTION HISTORY -->
+  <section id="history" class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2>Detection history</h2>
+        <p class="section-lead">Every analysis you run gets logged here for later reference.</p>
+      </div>
+
+      <div class="history-controls card-glass">
+        <div class="history-search">
+          <svg class="icon" aria-hidden="true"><use href="#icon-search"></use></svg>
+          <input type="search" id="historySearch" placeholder="Search by file name" aria-label="Search detection history">
+        </div>
+        <div class="history-filters" role="group" aria-label="Filter history by media type">
+          <button class="filter-chip is-active" data-filter="all" type="button">All</button>
+          <button class="filter-chip" data-filter="image" type="button">Image</button>
+          <button class="filter-chip" data-filter="video" type="button">Video</button>
+        </div>
+        <button class="btn btn-text btn-clear" id="clearHistoryBtn" type="button">
+          <svg class="icon" aria-hidden="true"><use href="#icon-trash"></use></svg>
+          Clear history
+        </button>
+      </div>
+
+      <div class="history-table-wrap card-glass">
+        <table class="history-table is-hidden" id="historyTable">
+          <thead>
+            <tr>
+              <th scope="col">File</th>
+              <th scope="col">Type</th>
+              <th scope="col">Result</th>
+              <th scope="col">Confidence</th>
+              <th scope="col">Date</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody"></tbody>
+        </table>
+
+        <div class="history-empty" id="historyEmpty">
+          <svg class="icon icon-lg" aria-hidden="true"><use href="#icon-history"></use></svg>
+          <p id="historyEmptyTitle">No detections yet.</p>
+          <p class="history-empty-sub" id="historyEmptySub">Analyze an image or video above and it will show up here.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECHNOLOGY -->
+  <section id="technology" class="section alt">
+    <div class="container">
+      <div class="section-head">
+        <h2>Technology stack</h2>
+        <p class="section-lead">What this prototype is built on today, and what it's designed to plug into next.</p>
+      </div>
+      <div class="tech-grid">
+        <article class="tech-card">
+          <svg class="icon" aria-hidden="true"><use href="#icon-layout"></use></svg>
+          <h3>Frontend</h3>
+          <ul>
+            <li>HTML5</li>
+            <li>CSS3</li>
+            <li>JavaScript</li>
+          </ul>
+          <p>The interface you're using now: semantic markup, a dark responsive layout, and vanilla JS for every interaction.</p>
+        </article>
+        <article class="tech-card">
+          <svg class="icon" aria-hidden="true"><use href="#icon-server"></use></svg>
+          <h3>Backend</h3>
+          <ul>
+            <li>Python</li>
+            <li>Flask / FastAPI</li>
+          </ul>
+          <p>Receives uploads, validates and preprocesses them, and calls the detection model.</p>
+        </article>
+        <article class="tech-card">
+          <svg class="icon" aria-hidden="true"><use href="#icon-cpu"></use></svg>
+          <h3>AI / ML</h3>
+          <ul>
+            <li>OpenCV, NumPy</li>
+            <li>TensorFlow / PyTorch</li>
+          </ul>
+          <p>A deep learning model trained to classify media as real or manipulated.</p>
+        </article>
+        <article class="tech-card">
+          <svg class="icon" aria-hidden="true"><use href="#icon-database"></use></svg>
+          <h3>Database</h3>
+          <ul>
+            <li>SQLite (initial)</li>
+            <li>PostgreSQL / MySQL (upgrade path)</li>
+          </ul>
+          <p>Starts lightweight for development, built to move to a production database later.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section id="team" class="section alt">
+    <div class="container">
+      <div class="section-head">
+        <h2>Team</h2>
+        <p class="section-lead">Placeholder cards — swap in your team's details before submission.</p>
+      </div>
+      <div class="team-grid">
+        <article class="team-card">
+          <div class="team-avatar" aria-hidden="true">01</div>
+          <h3>Team Member One</h3>
+          <p class="team-role">Role / Position</p>
+          <p class="team-dept">Department</p>
+          <div class="team-links">
+            <a href="#" class="team-link"><svg class="icon" aria-hidden="true"><use href="#icon-code"></use></svg>GitHub</a>
+            <a href="#" class="team-link"><svg class="icon" aria-hidden="true"><use href="#icon-link"></use></svg>LinkedIn</a>
+          </div>
+        </article>
+        <article class="team-card">
+          <div class="team-avatar" aria-hidden="true">02</div>
+          <h3>Team Member Two</h3>
+          <p class="team-role">Role / Position</p>
+          <p class="team-dept">Department</p>
+          <div class="team-links">
+            <a href="#" class="team-link"><svg class="icon" aria-hidden="true"><use href="#icon-code"></use></svg>GitHub</a>
+            <a href="#" class="team-link"><svg class="icon" aria-hidden="true"><use href="#icon-link"></use></svg>LinkedIn</a>
+          </div>
+        </article>
+        <article class="team-card">
+          <div class="team-avatar" aria-hidden="true">03</div>
+          <h3>Team Member Three</h3>
+          <p class="team-role">Role / Position</p>
+          <p class="team-dept">Department</p>
+          <div class="team-links">
+            <a href="#" class="team-link"><svg class="icon" aria-hidden="true"><use href="#icon-code"></use></svg>GitHub</a>
+            <a href="#" class="team-link"><svg class="icon" aria-hidden="true"><use href="#icon-link"></use></svg>LinkedIn</a>
+          </div>
+        </article>
+        <article class="team-card">
+          <div class="team-avatar" aria-hidden="true">04</div>
+          <h3>Team Member Four</h3>
+          <p class="team-role">Role / Position</p>
+          <p class="team-dept">Department</p>
+          <div class="team-links">
+            <a href="#" class="team-link"><svg class="icon" aria-hidden="true"><use href="#icon-code"></use></svg>GitHub</a>
+            <a href="#" class="team-link"><svg class="icon" aria-hidden="true"><use href="#icon-link"></use></svg>LinkedIn</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <p class="logo">Deep<span>Detect</span></p>
+      <p>AI-powered deepfake detection system.</p>
+      <p class="footer-disclaimer">College project prototype — not a production security tool.</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#features">Features</a>
+      <a href="#detection">Detection</a>
+      <a href="#history">History</a>
+    </nav>
+  </div>
+  <div class="container footer-bottom">
+    <p>© 2026 DeepDetect. College project.</p>
+  </div>
+</footer>
+
+<div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
