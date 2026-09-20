@@ -6,4 +6,4 @@
  * up running (see backend/app.py's own docstring for how to deploy it
  * with gunicorn).
  */
-window.DEEPDETECT_API_BASE_URL = "http://localhost:5000";
+window.DEEPDETECT_API_BASE_URL = "https://render.com/docs/web-services#port-binding";
